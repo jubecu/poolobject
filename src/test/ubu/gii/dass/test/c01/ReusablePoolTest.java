@@ -9,6 +9,7 @@ import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 
+import ubu.gii.dass.c01.DuplicatedInstanceException;
 import ubu.gii.dass.c01.NotFreeInstanceException;
 import ubu.gii.dass.c01.Reusable;
 import ubu.gii.dass.c01.ReusablePool;
@@ -19,7 +20,13 @@ import ubu.gii.dass.c01.ReusablePool;
  */
 public class ReusablePoolTest {
 
+	/**
+	 * Pool que usaremos para los test
+	 */
 	ReusablePool pool;
+	/**
+	 * Objetos de tipo Reusable que gestiona el Pool
+	 */
 	Reusable r1, r2, r3;
 
 	/**
@@ -73,8 +80,24 @@ public class ReusablePoolTest {
 	 * {@link ubu.gii.dass.c01.ReusablePool#releaseReusable(ubu.gii.dass.c01.Reusable)}.
 	 */
 	@Test
-	public void testReleaseReusable() {
-		fail("Not yet implemented");
+	public void testReleaseReusable() throws Exception {
+		boolean saltoExcepcionR1 = false;
+		boolean saltoExcepcionR2 = false;
+		r1 = pool.acquireReusable();
+		r2 = pool.acquireReusable();
+		pool.releaseReusable(r1);
+		try {
+			pool.releaseReusable(r1);
+		} catch (DuplicatedInstanceException excep) {
+			saltoExcepcionR1 = true;
+		}
+		try {
+			pool.releaseReusable(r2);
+		} catch (DuplicatedInstanceException excep) {
+			saltoExcepcionR2 = true;
+		}
+		assertTrue(saltoExcepcionR1);
+		assertFalse(saltoExcepcionR2);
 	}
 
 }
